@@ -8,20 +8,24 @@ public class wallet {
         this.name = name;
         this.balance = balance;
     }
+    public wallet(String name){
+        this.name = name;
+        balance = 0.0;
+    }
 
     private double balance;
     //String TIme of transaction + operation type + amount;
     private int transactionSize = 100;
     //Size will be increase by transactionSize / 2;
-    private String[] transactions = new String[transactionSize];
+    private Transaction[] transactions = new Transaction[transactionSize];
     private int transactionCount = 0;
     public void checkBalance(){
         System.out.println("Current Balance "+ balance );
     }
 
-    public boolean addMoney(double amount){
+    public boolean addMoney(double amount,String note){
         balance += amount;
-        addTransactions("Credit",amount);
+        addTransactions("Credit",amount,note);
         return true;
     }
     //Task: Create check given no of transactions
@@ -40,18 +44,16 @@ public class wallet {
               return;
           }
 
-          System.out.println(transactions[i]);
+          System.out.println(transactions[i].getRecord());
       }
     }
-    public void addTransactions( String type , double amount){
+    public void addTransactions( String type , double amount, String note){
         if(transactionCount >= transactions.length)
         {
             increaseSize();
         }
-        String record = LocalDateTime.now() + "|"
-                +type +"|"+ amount
-                +"| Balance "+ balance;
-        transactions[transactionCount] = record;
+        Transaction t = new Transaction(type,amount,balance,note);
+        transactions[transactionCount] = t;
         transactionCount++;
     }
 
@@ -63,18 +65,19 @@ public class wallet {
         this.name = name;
     }
 
-    public boolean pay(double amount){
+    public boolean pay(double amount,String note){
         if(balance >= amount){
             balance -= amount;
-            addTransactions("Debit",amount);
+
+            addTransactions("Debit",amount,note);
             return true;
         }
-        addTransactions("Failed",amount);
+        addTransactions("Failed",amount,note);
         return false;
     }
     public void increaseSize(){
         int newTransactionSize = transactionSize + transactionSize/2;
-        String[] temp = new String[newTransactionSize];
+        Transaction[] temp = new Transaction[newTransactionSize];
         for(int i=0; i< transactionSize;i++){
             temp[i] = transactions[i];
         }
@@ -90,10 +93,16 @@ public class wallet {
         type =type.toLowerCase();
 
         for(int i = 0;i<transactionCount;i++){
-            if(transactions[i].toLowerCase().contains(type)){
-                System.out.println(transactions[i]);
+            if(transactions[i].getRecord().toLowerCase().contains(type)){
+                System.out.println(transactions[i].getRecord());
             }
         }
     }
 
 }
+
+//transaction claSS
+//amount
+//type
+//balance
+//note
